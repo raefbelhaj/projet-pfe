@@ -1,0 +1,248 @@
+/* doctor-signup.component.css */
+
+.signup-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.signup-card {
+  max-width: 800px;
+  width: 100%;
+  margin: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.signup-card mat-card-header {
+  text-align: center;
+  padding: 24px 24px 0;
+}
+
+.signup-card mat-card-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.signup-card mat-card-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.signup-card mat-card-content {
+  padding: 24px;
+}
+
+/* Styles pour les champs de formulaire */
+mat-form-field {
+  margin-bottom: 16px;
+}
+
+mat-form-field.ms-1 {
+  margin-left: 8px;
+}
+
+mat-form-field.ms-2 {
+  margin-left: 16px;
+}
+
+/* Style pour les icônes des champs */
+mat-form-field mat-icon[matSuffix] {
+  color: #666;
+}
+
+/* Style pour les erreurs */
+mat-error {
+  font-size: 12px;
+  color: #f44336;
+  margin-top: 4px;
+}
+
+/* Message d'erreur général */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+  padding: 12px;
+  margin: 16px 0;
+  color: #c62828;
+}
+
+.error-message mat-icon {
+  font-size: 18px;
+}
+
+/* Bouton d'inscription */
+.register-button {
+  display: block;
+  width: 80%;
+  margin: 24px auto;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.register-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-button mat-icon {
+  margin-right: 8px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Lien d'authentification */
+.auth-link {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.auth-link p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.auth-link a {
+  color: #3f51b5;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+/* Styles spécifiques pour les groupes de champs */
+div[formGroupName="address"] {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  background-color: #fafafa;
+  position: relative;
+}
+
+div[formGroupName="address"]::before {
+  content: "Adresse";
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background-color: white;
+  padding: 0 8px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .signup-container {
+    padding: 10px;
+  }
+  
+  .signup-card {
+    margin: 10px;
+  }
+  
+  .signup-card mat-card-content {
+    padding: 16px;
+  }
+  
+  .signup-card mat-card-title {
+    font-size: 24px;
+  }
+  
+  /* Responsive pour les champs */
+  mat-form-field[style*="30%"],
+  mat-form-field[style*="25%"],
+  mat-form-field[style*="28%"],
+  mat-form-field[style*="36%"],
+  mat-form-field[style*="45%"],
+  mat-form-field[style*="60%"] {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-bottom: 16px;
+  }
+  
+  .register-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-card mat-card-title {
+    font-size: 20px;
+  }
+  
+  .signup-card mat-card-subtitle {
+    font-size: 14px;
+  }
+  
+  mat-form-field[style*="91.5%"] {
+    width: 100% !important;
+  }
+}
+
+/* Amélioration de l'apparence des select */
+mat-select {
+  font-size: 14px;
+}
+
+mat-option {
+  font-size: 14px;
+}
+
+/* Focus states améliorés */
+mat-form-field.mat-focused .mat-form-field-ripple {
+  background-color: #3f51b5;
+}
+
+mat-form-field.mat-focused .mat-form-field-label {
+  color: #3f51b5;
+}
+
+/* Animation pour les champs */
+mat-form-field {
+  transition: all 0.3s ease;
+}
+
+mat-form-field:hover {
+  transform: translateY(-1px);
+}
+
+/* Style pour les champs avec erreurs */
+mat-form-field.mat-form-field-invalid .mat-form-field-outline {
+  border-color: #f44336;
+}
+
+/* Amélioration des espaces entre les sections */
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-section:not(:last-child) {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 16px;
+}

@@ -1,0 +1,66 @@
+<mat-card>
+  <form [formGroup]="doctorRegisterForm" (ngSubmit)="doctorRegister()">
+
+    <mat-form-field appearance="fill">
+      <mat-label>Nom complet</mat-label>
+      <input matInput formControlName="fullName">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Mot de passe</mat-label>
+      <input matInput type="password" formControlName="password">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Confirmez le mot de passe</mat-label>
+      <input matInput type="password" formControlName="confirmPassword">
+      <mat-error *ngIf="doctorRegisterForm.hasError('mismatch')">
+        Les mots de passe ne correspondent pas
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Téléphone</mat-label>
+      <input matInput formControlName="phoneNumber">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Spécialité</mat-label>
+      <input matInput formControlName="specialty">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Numéro de licence médicale</mat-label>
+      <input matInput formControlName="medicalLicenseNumber">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Hôpital / Clinique</mat-label>
+      <input matInput formControlName="hospitalOrClinic">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Genre</mat-label>
+      <input matInput formControlName="gender">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Adresse</mat-label>
+      <input matInput formControlName="address">
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="isLoading">
+      {{ isLoading ? 'Inscription...' : 'S\'inscrire' }}
+    </button>
+
+    <div *ngIf="errorMessage" style="color:red; margin-top:10px;">
+      {{ errorMessage }}
+    </div>
+
+  </form>
+</mat-card>

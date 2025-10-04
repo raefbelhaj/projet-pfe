@@ -1,0 +1,57 @@
+.registeration-page {
+  top: 0;
+  margin: 0;
+  padding: 20px;
+  width: 100%;
+  min-height: 100vh; /* Changé de height à min-height */
+  display: flex; /* Changé de block à flex */
+  align-items: center; /* Centrage vertical */
+  justify-content: center; /* Centrage horizontal */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow-y: auto; /* Changé de hidden à auto pour permettre le scroll */
+  box-sizing: border-box;
+}
+
+mat-card {
+  text-align: center;
+  width: 90%; /* Responsive sur mobile */
+  max-width: 600px; /* Largeur maximale */
+  min-height: 500px; /* Hauteur minimale au lieu de fixe */
+  max-height: 90vh; /* Hauteur maximale pour éviter le débordement */
+  margin: 0; /* Suppression des marges car centré avec flexbox */
+  padding: 24px; /* Ajout de padding interne */
+  border-radius: 12px; /* Bordures plus arrondies */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Ombre plus prononcée */
+  overflow-y: auto; /* Scroll interne si nécessaire */
+  box-sizing: border-box;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .registeration-page {
+    padding: 10px;
+  }
+  
+  mat-card {
+    width: 95%;
+    min-height: 400px;
+    padding: 16px;
+  }
+}
+
+/* Styles pour les onglets */
+.mat-tab-group {
+  margin-top: 16px;
+}
+
+.mat-tab-body-wrapper {
+  padding: 16px 0;
+}
+
+/* Assurer que le contenu des onglets ne déborde pas */
+.mat-tab-body-content {
+  overflow-y: auto;
+  max-height: 60vh;
+}
