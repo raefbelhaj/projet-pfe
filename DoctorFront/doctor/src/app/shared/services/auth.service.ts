@@ -16,7 +16,12 @@ export interface UserSignupDTO {
   password: string;
   phoneNumber: string;
   role: string;
-  doctorDTO: DoctorDTO;
+  doctorDTO?: DoctorDTO;
+}
+
+export interface LoginUserDTO {
+  email: string;
+  password: string;
 }
 
 @Injectable({
@@ -25,9 +30,26 @@ export interface UserSignupDTO {
 export class AuthService {
   private apiUrl = 'http://localhost:8000/auth';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   registerDoctor(payload: UserSignupDTO): Observable<any> {
     return this.http.post(`${this.apiUrl}/signup`, payload);
+  }
+
+  login(payload: LoginUserDTO): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, payload);
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('expiresIn');
+  }
+
+  isLoggedIn(): boolean {
+    return typeof window !== 'undefined' && !!localStorage.getItem('token');
+  }
+
+  getToken(): string | null {
+    return typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   }
 }

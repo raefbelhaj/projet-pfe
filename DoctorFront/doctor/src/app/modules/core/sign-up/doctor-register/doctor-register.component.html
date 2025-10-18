@@ -58,6 +58,14 @@
       {{ isLoading ? 'Inscription...' : 'S\'inscrire' }}
     </button>
 
+    <!-- ✅ Lien de redirection vers la page de connexion -->
+    <div style="margin-top: 16px; text-align: center;">
+      <span>Vous avez déjà un compte ? </span>
+      <a routerLink="/auth/signin" style="color:#3f51b5; text-decoration:none; font-weight:500;">
+        Se connecter
+      </a>
+    </div>
+
     <div *ngIf="errorMessage" style="color:red; margin-top:10px;">
       {{ errorMessage }}
     </div>
