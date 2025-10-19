@@ -1,57 +1,34 @@
+/* Le wrapper laisse défiler la PAGE (pas de scroll interne au card) */
 .registeration-page {
-  top: 0;
-  margin: 0;
-  padding: 20px;
-  width: 100%;
-  min-height: 100vh; /* Changé de height à min-height */
-  display: flex; /* Changé de block à flex */
-  align-items: center; /* Centrage vertical */
-  justify-content: center; /* Centrage horizontal */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  overflow-y: auto; /* Changé de hidden à auto pour permettre le scroll */
   box-sizing: border-box;
+  min-height: 100svh;
+  padding: 24px;
+  background: #f6fbff;
 }
 
-mat-card {
-  text-align: center;
-  width: 90%; /* Responsive sur mobile */
-  max-width: 600px; /* Largeur maximale */
-  min-height: 500px; /* Hauteur minimale au lieu de fixe */
-  max-height: 90vh; /* Hauteur maximale pour éviter le débordement */
-  margin: 0; /* Suppression des marges car centré avec flexbox */
-  padding: 24px; /* Ajout de padding interne */
-  border-radius: 12px; /* Bordures plus arrondies */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Ombre plus prononcée */
-  overflow-y: auto; /* Scroll interne si nécessaire */
+/* Card large, centré, sans hauteur max ni overflow interne */
+.reg-card {
   box-sizing: border-box;
+  width: min(2000px, 100vw);   /* ✅ bien plus large */
+  margin: 0 auto;
+  padding: 16px 24px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.15);
+  overflow: visible;          /* ✅ pas de scroll interne */
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .registeration-page {
-    padding: 10px;
-  }
-  
-  mat-card {
-    width: 95%;
-    min-height: 400px;
-    padding: 16px;
-  }
-}
+/* Les tabs prennent toute la largeur et s’adaptent à la hauteur du contenu */
+.mat-tab-group { width: 100%; margin-top: 12px; }
+.mat-tab-body-wrapper { padding: 0; }
 
-/* Styles pour les onglets */
-.mat-tab-group {
-  margin-top: 16px;
-}
-
-.mat-tab-body-wrapper {
-  padding: 16px 0;
-}
-
-/* Assurer que le contenu des onglets ne déborde pas */
+/* ✅ SUPER IMPORTANT : ne pas brider l’onglet */
 .mat-tab-body-content {
-  overflow-y: auto;
-  max-height: 60vh;
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .registeration-page { padding: 12px; }
+  .reg-card { width: 98vw; padding: 12px; }
 }

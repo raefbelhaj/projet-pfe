@@ -8,6 +8,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService, LoginUserDTO } from '../../../shared/services/auth.service';
+import { MatIcon } from "@angular/material/icon";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 
 @Component({
@@ -22,13 +24,16 @@ import { AuthService, LoginUserDTO } from '../../../shared/services/auth.service
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatSnackBarModule
-  ]
+    MatSnackBarModule,
+    MatIcon,
+    MatProgressSpinner
+]
 })
 export class LoginComponent {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
+hide: any;
 
   constructor(
     private fb: FormBuilder,
@@ -66,7 +71,7 @@ export class LoginComponent {
           localStorage.setItem('expiresIn', res.expiresIn);
         }
         this.snackBar.open('Connexion réussie ✅', 'Fermer', { duration: 3000 });
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/app']);
       },
       error: (err: any) => {
         this.isLoading = false;

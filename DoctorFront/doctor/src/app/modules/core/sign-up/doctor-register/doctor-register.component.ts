@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService, UserSignupDTO } from '../../../../shared/services/auth.service';
 
@@ -22,13 +25,20 @@ import { AuthService, UserSignupDTO } from '../../../../shared/services/auth.ser
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    RouterLink,
   ]
 })
 export class DoctorRegisterComponent {
   doctorRegisterForm: FormGroup;
   isLoading = false;
   errorMessage = '';
+
+  // pour l'œil des champs mdp
+  hidePwd = true;
+  hideConfirm = true;
 
   constructor(
     private fb: FormBuilder,
@@ -46,20 +56,19 @@ export class DoctorRegisterComponent {
       medicalLicenseNumber: ['', Validators.required],
       hospitalOrClinic: ['', Validators.required],
       gender: ['', Validators.required],
-      address: ['', Validators.required]
+      address: ['', Validators.required],
     }, { validators: this.passwordMatchValidator });
   }
 
-  // Vérification des mots de passe
   passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
-    return password === confirmPassword ? null : { mismatch: true };
+    const p = form.get('password')?.value;
+    const c = form.get('confirmPassword')?.value;
+    return p === c ? null : { mismatch: true };
   }
 
   doctorRegister(): void {
     if (this.doctorRegisterForm.invalid) {
-      this.errorMessage = "Veuillez remplir correctement le formulaire.";
+      this.errorMessage = 'Veuillez remplir correctement le formulaire.';
       return;
     }
 
@@ -67,8 +76,7 @@ export class DoctorRegisterComponent {
     this.errorMessage = '';
 
     const fv = this.doctorRegisterForm.value;
-
-    const doctorPayload: UserSignupDTO = {
+    const payload: UserSignupDTO = {
       fullName: fv.fullName,
       email: fv.email,
       password: fv.password,
@@ -79,20 +87,20 @@ export class DoctorRegisterComponent {
         medicalLicenseNumber: fv.medicalLicenseNumber,
         hospitalOrClinic: fv.hospitalOrClinic,
         gender: fv.gender,
-        address: fv.address
-      }
+        address: fv.address,
+      },
     };
 
-    this.authService.registerDoctor(doctorPayload).subscribe({
+    this.authService.registerDoctor(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        this.snackBar.open(res.message || 'Inscription réussie ✅', 'Fermer', { duration: 3000 });
-        this.router.navigate(['/login']);
+        this.snackBar.open(res?.message || 'Inscription réussie ✅', 'Fermer', { duration: 3000 });
+        this.router.navigate(['/auth/signin']); // redirection vers login
       },
       error: (err: any) => {
         this.isLoading = false;
-        // Afficher le message du backend si disponible
-        this.errorMessage = err.error?.message || 'Erreur lors de l’inscription';
+        this.errorMessage =
+          err?.error?.message || err?.message || 'Erreur lors de l’inscription';
       }
     });
   }

@@ -1,74 +1,146 @@
-<mat-card>
-  <form [formGroup]="doctorRegisterForm" (ngSubmit)="doctorRegister()">
+<div class="auth-wrapper">
+  <!-- Panneau marque / visuel médical -->
+  <section class="brand-panel">
+    <div class="brand-content">
+      <img class="logo" src="assets/images/Logo.png" alt="Healing Clinic" />
+      <h1>Rejoindre le corps médical</h1>
+      <p>Créez votre compte professionnel et accédez à nos outils sécurisés.</p>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Nom complet</mat-label>
-      <input matInput formControlName="fullName">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Mot de passe</mat-label>
-      <input matInput type="password" formControlName="password">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Confirmez le mot de passe</mat-label>
-      <input matInput type="password" formControlName="confirmPassword">
-      <mat-error *ngIf="doctorRegisterForm.hasError('mismatch')">
-        Les mots de passe ne correspondent pas
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Téléphone</mat-label>
-      <input matInput formControlName="phoneNumber">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Spécialité</mat-label>
-      <input matInput formControlName="specialty">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Numéro de licence médicale</mat-label>
-      <input matInput formControlName="medicalLicenseNumber">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Hôpital / Clinique</mat-label>
-      <input matInput formControlName="hospitalOrClinic">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Genre</mat-label>
-      <input matInput formControlName="gender">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Adresse</mat-label>
-      <input matInput formControlName="address">
-    </mat-form-field>
-
-    <button mat-raised-button color="primary" type="submit" [disabled]="isLoading">
-      {{ isLoading ? 'Inscription...' : 'S\'inscrire' }}
-    </button>
-
-    <!-- ✅ Lien de redirection vers la page de connexion -->
-    <div style="margin-top: 16px; text-align: center;">
-      <span>Vous avez déjà un compte ? </span>
-      <a routerLink="/auth/signin" style="color:#3f51b5; text-decoration:none; font-weight:500;">
-        Se connecter
-      </a>
+      <ul class="trust">
+        <li><mat-icon aria-hidden="true">badge</mat-icon> Vérification de licence</li>
+        <li><mat-icon aria-hidden="true">health_and_safety</mat-icon> Données sécurisées</li>
+        <li><mat-icon aria-hidden="true">event_available</mat-icon> Agenda et dossiers</li>
+      </ul>
     </div>
+  </section>
 
-    <div *ngIf="errorMessage" style="color:red; margin-top:10px;">
-      {{ errorMessage }}
-    </div>
+  <!-- Carte formulaire -->
+  <section class="form-panel">
+    <mat-card class="signup-card" appearance="outlined">
+      <mat-card-header>
+        <div mat-card-avatar class="avatar">
+          <mat-icon>local_hospital</mat-icon>
+        </div>
+        <mat-card-title>Inscription médecin</mat-card-title>
+        <mat-card-subtitle>Renseignez vos informations</mat-card-subtitle>
+      </mat-card-header>
 
-  </form>
-</mat-card>
+      <mat-card-content>
+        <form [formGroup]="doctorRegisterForm" (ngSubmit)="doctorRegister()" novalidate>
+          <div class="grid">
+            <!-- Colonne 1 -->
+            <div class="col">
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Nom complet</mat-label>
+                <mat-icon matPrefix>person</mat-icon>
+                <input matInput formControlName="fullName" />
+                <mat-error *ngIf="doctorRegisterForm.get('fullName')?.hasError('required')">Requis</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Email</mat-label>
+                <mat-icon matPrefix>mail</mat-icon>
+                <input matInput type="email" formControlName="email" placeholder="prenom.nom@clinique.tld" />
+                <mat-error *ngIf="doctorRegisterForm.get('email')?.hasError('required')">Requis</mat-error>
+                <mat-error *ngIf="doctorRegisterForm.get('email')?.hasError('email')">Email invalide</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Mot de passe</mat-label>
+                <mat-icon matPrefix>lock</mat-icon>
+                <input matInput [type]="hidePwd ? 'password' : 'text'" formControlName="password" />
+                <button mat-icon-button matSuffix type="button" (click)="hidePwd = !hidePwd">
+                  <mat-icon>{{ hidePwd ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="doctorRegisterForm.get('password')?.hasError('required')">Requis</mat-error>
+                <mat-error *ngIf="doctorRegisterForm.get('password')?.hasError('minlength')">6 caractères min.</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Confirmez le mot de passe</mat-label>
+                <mat-icon matPrefix>lock</mat-icon>
+                <input matInput [type]="hideConfirm ? 'password' : 'text'" formControlName="confirmPassword" />
+                <button mat-icon-button matSuffix type="button" (click)="hideConfirm = !hideConfirm">
+                  <mat-icon>{{ hideConfirm ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="doctorRegisterForm.hasError('mismatch')">Les mots de passe ne correspondent pas</mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Colonne 2 -->
+            <div class="col">
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Téléphone</mat-label>
+                <mat-icon matPrefix>call</mat-icon>
+                <input matInput formControlName="phoneNumber" />
+                <mat-error *ngIf="doctorRegisterForm.get('phoneNumber')?.hasError('required')">Requis</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Spécialité</mat-label>
+                <mat-icon matPrefix>science</mat-icon>
+                <input matInput formControlName="specialty" />
+                <mat-error *ngIf="doctorRegisterForm.get('specialty')?.hasError('required')">Requis</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Numéro de licence médicale</mat-label>
+                <mat-icon matPrefix>workspace_premium</mat-icon>
+                <input matInput formControlName="medicalLicenseNumber" />
+                <mat-error *ngIf="doctorRegisterForm.get('medicalLicenseNumber')?.hasError('required')">Requis</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Hôpital / Clinique</mat-label>
+                <mat-icon matPrefix>home_work</mat-icon>
+                <input matInput formControlName="hospitalOrClinic" />
+                <mat-error *ngIf="doctorRegisterForm.get('hospitalOrClinic')?.hasError('required')">Requis</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Genre</mat-label>
+                <mat-icon matPrefix>person_outline</mat-icon>
+                <input matInput formControlName="gender" />
+                <mat-error *ngIf="doctorRegisterForm.get('gender')?.hasError('required')">Requis</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="full">
+                <mat-label>Adresse</mat-label>
+                <mat-icon matPrefix>place</mat-icon>
+                <input matInput formControlName="address" />
+                <mat-error *ngIf="doctorRegisterForm.get('address')?.hasError('required')">Requis</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Erreur API -->
+          <div *ngIf="errorMessage" class="error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <!-- Bouton -->
+          <button
+            class="cta"
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="isLoading || doctorRegisterForm.invalid"
+          >
+            <ng-container *ngIf="!isLoading; else loadingTpl">S'inscrire</ng-container>
+          </button>
+          <ng-template #loadingTpl>
+            <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+            <span class="loading-text">Création du compte…</span>
+          </ng-template>
+
+          <!-- Lien connexion -->
+          <div class="auth-link">
+            <span>Vous avez déjà un compte ?</span>
+            <a routerLink="/auth/signin">Se connecter</a>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </section>
+</div>

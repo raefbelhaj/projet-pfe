@@ -1,23 +1,122 @@
-<mat-card>
-  <form [formGroup]="loginForm" (ngSubmit)="login()">
+<div class="auth-wrapper">
+  <section class="brand-panel">
+    <div class="brand-content">
+      <img class="logo" src="assets/images/Logo.png" alt="Healing Clinic" />
+      <h1>Healing Clinic</h1>
+      <p>Accédez à votre espace professionnel en toute sécurité.</p>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Mot de passe</mat-label>
-      <input matInput type="password" formControlName="password">
-    </mat-form-field>
-
-    <button mat-raised-button color="primary" type="submit" [disabled]="isLoading">
-      {{ isLoading ? 'Connexion...' : 'Se connecter' }}
-    </button>
-
-    <div *ngIf="errorMessage" style="color:red; margin-top:10px;">
-      {{ errorMessage }}
+      <ul class="trust">
+        <li><mat-icon aria-hidden="true">verified_user</mat-icon> Données protégées</li>
+        <li><mat-icon aria-hidden="true">health_and_safety</mat-icon> Espace médical</li>
+        <li><mat-icon aria-hidden="true">support_agent</mat-icon> Support dédié</li>
+      </ul>
     </div>
+  </section>
 
-  </form>
-</mat-card>
+  <section class="form-panel">
+    <mat-card class="login-card" appearance="outlined">
+      <mat-card-header>
+        <div mat-card-avatar class="avatar">
+          <mat-icon>local_hospital</mat-icon>
+        </div>
+        <mat-card-title>Espace médecin</mat-card-title>
+        <mat-card-subtitle>Connectez-vous pour continuer</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="login()" autocomplete="on" novalidate>
+
+          <!-- Email -->
+          <mat-form-field appearance="fill" class="full">
+            <mat-label>Email professionnel</mat-label>
+            <mat-icon matPrefix>mail</mat-icon>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="prenom.nom@clinique.tld"
+            />
+            <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+              L’email est requis
+            </mat-error>
+            <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+              Format d’email invalide
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Mot de passe -->
+          <mat-form-field appearance="fill" class="full">
+            <mat-label>Mot de passe</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input
+              matInput
+              [type]="hide ? 'password' : 'text'"
+              formControlName="password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hide = !hide"
+              [attr.aria-label]="'Afficher le mot de passe'"
+            >
+              <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+              Le mot de passe est requis
+            </mat-error>
+            <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+              Au moins 6 caractères
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Ligne options -->
+          <!-- Décommente si tu ajoutes la case "remember" dans le TS
+          <div class="row between">
+            <mat-checkbox formControlName="remember">Se souvenir de moi</mat-checkbox>
+            <a routerLink="/auth/forgot-password" class="link">Mot de passe oublié ?</a>
+          </div>
+          -->
+
+          <!-- Erreur backend -->
+          <div *ngIf="errorMessage" class="error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <!-- Bouton principal -->
+          <button
+            class="cta"
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="isLoading || loginForm.invalid"
+          >
+            <ng-container *ngIf="!isLoading; else loadingTpl">Se connecter</ng-container>
+          </button>
+
+          <!-- Spinner pendant chargement -->
+          <ng-template #loadingTpl>
+            <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+            <span class="loading-text">Connexion…</span>
+          </ng-template>
+
+          <div class="divider"><span>ou</span></div>
+
+          <!-- Action secondaire -->
+          <button mat-stroked-button color="primary" type="button" class="alt" routerLink="/auth/signup">
+            Créer un compte
+          </button>
+        </form>
+      </mat-card-content>
+
+      <mat-card-footer>
+        <p class="footnote">
+          En vous connectant, vous acceptez nos
+          <a routerLink="/legal/terms" class="link">Conditions</a> et notre
+          <a routerLink="/legal/privacy" class="link">Politique de confidentialité</a>.
+        </p>
+      </mat-card-footer>
+    </mat-card>
+  </section>
+</div>

@@ -1,0 +1,61 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav #drawer [mode]="isMobile() ? 'over' : 'side'" [opened]="!isMobile()" class="sidenav">
+    <div class="sidenav-header">
+      <mat-icon class="logo-icon">local_hospital</mat-icon>
+      <span class="logo-text">MaClinique</span>
+    </div>
+
+    <mat-nav-list>
+      <a mat-list-item routerLink="accueil" routerLinkActive="active">
+        <mat-icon>home</mat-icon>Accueil
+      </a>
+      <a mat-list-item routerLink="profil" routerLinkActive="active">
+        <mat-icon>person</mat-icon>Profil
+      </a>
+      <a mat-list-item routerLink="docteurs" routerLinkActive="active">
+        <mat-icon>medical_services</mat-icon>Docteurs
+      </a>
+      <a mat-list-item routerLink="messages" routerLinkActive="active">
+        <mat-icon>chat</mat-icon>Messages
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="toolbar" color="primary">
+      <button mat-icon-button (click)="drawer.toggle()" class="menu-btn" *ngIf="isMobile()">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <div class="brand">
+        <mat-icon class="logo-icon">local_hospital</mat-icon>
+        <span class="brand-text">MaClinique</span>
+      </div>
+
+      <span class="spacer"></span>
+
+      <button mat-icon-button matTooltip="Notifications">
+        <mat-icon matBadge="2" matBadgeColor="warn">notifications</mat-icon>
+      </button>
+
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
+        <img class="avatar" src="https://i.pravatar.cc/40?img=11" alt="user" />
+        <span class="user-name">Dr. Karim</span>
+        <mat-icon>expand_more</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item routerLink="profil">
+          <mat-icon>person</mat-icon> Profil
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon> Déconnexion
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

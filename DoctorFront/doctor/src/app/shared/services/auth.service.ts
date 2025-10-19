@@ -52,4 +52,25 @@ export class AuthService {
   getToken(): string | null {
     return typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   }
+
+  /**
+   * Try to return user info from token (if JWT) by decoding payload.
+   * If no token or not a JWT, returns null.
+   */
+  getUserInfo(): any | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    // JWTs have three parts separated by '.' ; payload is the 2nd part
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    try {
+      const payload = parts[1];
+      const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decodeURIComponent(escape(json)));
+    } catch (e) {
+      return null;
+    }
+  }
 }

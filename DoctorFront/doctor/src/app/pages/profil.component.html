@@ -1,0 +1,14 @@
+<div class="profil-page">
+	<h1>Profil</h1>
+
+	<div *ngIf="user; else notLogged">
+		<p><strong>Nom:</strong> {{ user.fullName || user.name || user.username || user.sub || '-' }}</p>
+		<p><strong>Email:</strong> {{ user.email || '-' }}</p>
+		<p><strong>Rôle:</strong> {{ user.role || user.roles || '-' }}</p>
+		<pre style="background:#f6f6f6; padding:10px">{{ user | json }}</pre>
+	</div>
+
+	<ng-template #notLogged>
+		<p>Vous n'êtes pas connecté. <a routerLink="/auth/signin">Se connecter</a></p>
+	</ng-template>
+</div>
