@@ -1,1 +1,33 @@
-<p>docteurs works!</p>
+<h1>Liste des docteurs</h1>
+
+<mat-form-field appearance="outline" class="full">
+  <mat-icon matPrefix>search</mat-icon>
+  <input matInput placeholder="Rechercher un docteur..." [(ngModel)]="q" />
+</mat-form-field>
+
+<div *ngIf="loading" class="hint">Chargement…</div>
+<div *ngIf="error" class="error">
+  <mat-icon>error_outline</mat-icon>
+  {{ error }}
+</div>
+
+<div class="grid">
+  <mat-card class="card" *ngFor="let d of filteredDoctors()">
+    <mat-card-header>
+      <div mat-card-avatar class="avatar">
+        <mat-icon>person</mat-icon>
+      </div>
+      <mat-card-title>{{ d.fullName }}</mat-card-title>
+      <mat-card-subtitle>
+        {{ d.specialty }} <ng-container *ngIf="d.hospitalOrClinic">- {{ d.hospitalOrClinic }}</ng-container>
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="row" *ngIf="d.email"><mat-icon>mail</mat-icon>{{ d.email }}</div>
+      <div class="row" *ngIf="d.phoneNumber"><mat-icon>call</mat-icon>{{ d.phoneNumber }}</div>
+      <div class="row" *ngIf="d.medicalLicenseNumber"><mat-icon>workspace_premium</mat-icon>{{ d.medicalLicenseNumber }}</div>
+      <div class="row" *ngIf="d.address"><mat-icon>place</mat-icon>{{ d.address }}</div>
+    </mat-card-content>
+  </mat-card>
+</div>
