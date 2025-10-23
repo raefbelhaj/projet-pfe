@@ -1,11 +1,15 @@
+// src/app/app.config.ts
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withFetch } from '@angular/common/http'; // ⬅️ ajoute withFetch
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
-// Angular Material
+// ✅ Interceptor
+import { authInterceptor } from './shared/interceptors/auth.interceptor';
+
+// Angular Material (optional to keep here; fine for global providers)
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,13 +23,17 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
 
-    // ✅ Active fetch() pour SSR (corrige NG02801)
-    provideHttpClient(withFetch()),
+    // ✅ Single call with all HTTP features
+    provideHttpClient(
+      withInterceptors([authInterceptor]),
+      withFetch() // OK even without SSR; if you don't need it, remove it
+    ),
 
-    provideClientHydration(),
+    // Uncomment only if you actually use SSR
+    // provideClientHydration(),
+
     provideAnimations(),
 
-    // Modules Material (ok de les garder ici)
     importProvidersFrom(
       MatCardModule,
       MatFormFieldModule,

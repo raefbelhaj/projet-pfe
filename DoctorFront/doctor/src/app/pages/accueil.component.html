@@ -1,1 +1,71 @@
-<p>accueil works!</p>
+<!-- Composer -->
+<mat-card class="composer">
+  <div class="composer-row">
+    <mat-icon class="avatar">local_hospital</mat-icon>
+    <mat-form-field appearance="outline" class="field">
+      <textarea matInput rows="3" [(ngModel)]="content"
+        placeholder="Partager un article, une ressource, une recommandation…"></textarea>
+    </mat-form-field>
+  </div>
+  <div class="composer-actions">
+    <button mat-stroked-button (click)="content=''" *ngIf="content?.length">Effacer</button>
+    <span class="spacer"></span>
+    <button mat-raised-button color="primary" (click)="publish()">Publier</button>
+  </div>
+</mat-card>
+
+<!-- Feed -->
+<div class="feed">
+  <mat-card class="post" *ngFor="let p of posts">
+    <mat-card-header>
+      <div mat-card-avatar class="avatar-circle"><mat-icon>person</mat-icon></div>
+      <mat-card-title>{{ p.authorName }}</mat-card-title>
+      <mat-card-subtitle>
+        <ng-container *ngIf="p.authorSpecialty">{{ p.authorSpecialty }} · </ng-container>
+        <span>{{ p.createdAt | date:'short' }}</span>
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p class="content">{{ p.content }}</p>
+    </mat-card-content>
+
+    <!-- Réactions -->
+    <div class="reactions" *ngIf="reactions[p.id!]">
+      <button mat-button [class.active]="reactions[p.id!].meLike" (click)="react(p, 'LIKE')">
+        <mat-icon>thumb_up</mat-icon> {{ reactions[p.id!].like }}
+      </button>
+      <button mat-button [class.active]="reactions[p.id!].meClap" (click)="react(p, 'CLAP')">
+        <mat-icon>front_hand</mat-icon> {{ reactions[p.id!].clap }}
+      </button>
+      <button mat-button [class.active]="reactions[p.id!].meInsightful" (click)="react(p, 'INSIGHTFUL')">
+        <mat-icon>lightbulb</mat-icon> {{ reactions[p.id!].insightful }}
+      </button>
+
+      <span class="spacer"></span>
+      <button mat-stroked-button (click)="toggleComments(p)">
+        <mat-icon>chat_bubble</mat-icon> Commentaires
+      </button>
+    </div>
+
+    <!-- Commentaires -->
+    <div class="comments" *ngIf="comments[p.id!]">
+      <div class="comment" *ngFor="let c of comments[p.id!]">
+        <div class="comment-avatar"><mat-icon>person</mat-icon></div>
+        <div class="comment-body">
+          <div class="comment-meta">
+            <strong>{{ c.userName }}</strong> · <span>{{ c.createdAt | date:'short' }}</span>
+          </div>
+          <div class="comment-content">{{ c.content }}</div>
+        </div>
+      </div>
+
+      <div class="comment-new">
+        <mat-form-field class="field" appearance="fill">
+          <input matInput placeholder="Écrire un commentaire…" [(ngModel)]="newComment[p.id!]" />
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addComment(p)">Envoyer</button>
+      </div>
+    </div>
+  </mat-card>
+</div>

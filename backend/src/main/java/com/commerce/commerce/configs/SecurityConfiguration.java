@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,17 +31,20 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .cors() // Make sure to enable CORS here
-                .and()
-                .authorizeRequests()
-                .requestMatchers("/auth/**").permitAll() // Replace antMatchers() with requestMatchers()
-                .requestMatchers("/api/patients/**").hasAuthority("ROLE_DOCTOR")
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+        http
+                // 🔹 Désactive CSRF (utile pour API stateless)
+                .csrf(AbstractHttpConfigurer::disable)
+                // 🔹 Active CORS avec la config ci-dessous
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // 🔹 Autorisations
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/**", "/auth/**", "/ws/**", "/topic/**").permitAll()
+                        .requestMatchers("/api/patients/**").hasAuthority("ROLE_DOCTOR")
+                        .anyRequest().authenticated()
+                )
+                // 🔹 Mode stateless (JWT)
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 🔹 Ajoute ton filtre JWT
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -48,16 +52,21 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        // 🔹 Autorise Angular en dev
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        // 🔹 Autorise les méthodes HTTP
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // 🔹 Autorise les en-têtes courants (sinon les requêtes preflight échouent)
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        // 🔹 Autorise les cookies/tokens si besoin
+        configuration.setAllowCredentials(true);
 
+        // 🔹 Applique la config à toutes les routes
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 }
