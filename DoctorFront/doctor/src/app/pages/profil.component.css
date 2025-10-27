@@ -1,0 +1,555 @@
+/* ========================================
+   LAYOUT PRINCIPAL
+======================================== */
+.profil-container {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  background: #f3f2ef;
+  min-height: 100vh;
+}
+
+@media (max-width: 1024px) {
+  .profil-container {
+    grid-template-columns: 1fr;
+  }
+  .sidebar-section {
+    display: none;
+  }
+}
+
+/* ========================================
+   SECTION PRINCIPALE
+======================================== */
+.main-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ========================================
+   CARTE PROFIL PRINCIPALE
+======================================== */
+.profile-main-card {
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid #e0e0e0;
+  background: white;
+  overflow: hidden;
+}
+
+/* Bannière */
+.profile-banner {
+  position: relative;
+  height: 200px;
+  background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
+  background-size: cover;
+  background-position: center;
+}
+
+.edit-banner-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+.edit-banner-btn:hover {
+  background: white;
+}
+
+/* Contenu Profil */
+.profile-content {
+  padding: 0 24px 24px;
+  position: relative;
+}
+
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -80px;
+  margin-bottom: 16px;
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 152px;
+  height: 152px;
+  margin-bottom: 12px;
+}
+
+.profile-avatar {
+  width: 152px;
+  height: 152px;
+  border-radius: 50%;
+  border: 4px solid white;
+  background: #e0f2f1;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: block;
+}
+
+.avatar-edit-overlay {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.avatar-edit-overlay:hover {
+  background: #00897b;
+  border-color: #00897b;
+  transform: scale(1.1);
+}
+
+.avatar-edit-overlay:hover mat-icon {
+  color: white;
+}
+
+.avatar-edit-overlay mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+.save-avatar-btn {
+  border-radius: 24px;
+  text-transform: none;
+  font-weight: 600;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 137, 123, 0.3);
+}
+
+.save-avatar-btn mat-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Info Header */
+.profile-header-info {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.profile-name {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+
+.profile-specialty {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 8px;
+}
+
+.profile-location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 24px;
+}
+
+.profile-location mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Stats */
+.profile-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat strong {
+  font-size: 20px;
+  font-weight: 600;
+  color: #00897b;
+}
+
+.stat span {
+  font-size: 13px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   CARTE INFORMATIONS
+======================================== */
+.info-card,
+.activity-card {
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid #e0e0e0;
+  background: white;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.card-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.edit-icon-btn {
+  color: #666;
+}
+
+.edit-icon-btn:hover {
+  background: #f3f2ef;
+  color: #00897b;
+}
+
+/* Mode Lecture */
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.info-item mat-icon {
+  color: #00897b;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.info-text {
+  flex: 1;
+}
+
+.info-text label {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.info-text p {
+  font-size: 15px;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Mode Édition */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  width: 100%;
+}
+
+.form-field ::ng-deep .mat-mdc-text-field-wrapper {
+  background: #f8f9fa;
+}
+
+.form-field ::ng-deep .mdc-text-field--outlined {
+  border-radius: 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-actions button {
+  flex: 1;
+  border-radius: 8px;
+  text-transform: none;
+  font-weight: 600;
+  padding: 12px 24px;
+}
+
+.form-actions button mat-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* ========================================
+   CARTE ACTIVITÉ
+======================================== */
+.view-all-btn {
+  color: #00897b;
+  text-transform: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activity-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.activity-item:hover {
+  background: #f8f9fa;
+  cursor: pointer;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #e0f2f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-icon mat-icon {
+  color: #00897b;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+/* ========================================
+   SIDEBAR DROITE
+======================================== */
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skills-card,
+.education-card,
+.certifications-card {
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid #e0e0e0;
+  background: white;
+}
+
+/* Compétences */
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-chip {
+  padding: 8px 16px;
+  background: #e0f2f1;
+  color: #00897b;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.skill-chip:hover {
+  background: #00897b;
+  color: white;
+  cursor: pointer;
+}
+
+/* Formation */
+.education-list,
+.cert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.education-item,
+.cert-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.edu-icon,
+.cert-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #e0f2f1;
+  color: #00897b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+.edu-content,
+.cert-content {
+  flex: 1;
+}
+
+.edu-content h4,
+.cert-content h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+
+.edu-content p {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 4px;
+}
+
+.edu-content span,
+.cert-content span {
+  font-size: 12px;
+  color: #999;
+}
+
+/* ========================================
+   ANIMATIONS & TRANSITIONS
+======================================== */
+.profile-main-card,
+.info-card,
+.activity-card,
+.skills-card,
+.education-card,
+.certifications-card {
+  transition: all 0.3s ease;
+}
+
+.profile-main-card:hover,
+.info-card:hover,
+.activity-card:hover,
+.skills-card:hover,
+.education-card:hover,
+.certifications-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 768px) {
+  .profil-container {
+    padding: 16px 8px;
+  }
+
+  .profile-banner {
+    height: 120px;
+  }
+
+  .avatar-section {
+    margin-top: -60px;
+  }
+
+  .profile-avatar,
+  .avatar-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-name {
+    font-size: 22px;
+  }
+
+  .profile-stats {
+    gap: 20px;
+  }
+
+  .stat strong {
+    font-size: 18px;
+  }
+
+  .info-card,
+  .activity-card {
+    padding: 16px;
+  }
+}

@@ -1,14 +1,255 @@
-<div class="profil-page">
-	<h1>Profil</h1>
+<div class="profil-container">
+  <!-- Section Principale -->
+  <div class="main-section">
+    <!-- Carte Profil Principal -->
+    <mat-card class="profile-main-card" *ngIf="user">
+      <!-- Bannière -->
+      <div class="profile-banner">
+        <button mat-icon-button class="edit-banner-btn">
+          <mat-icon>photo_camera</mat-icon>
+        </button>
+      </div>
 
-	<div *ngIf="user; else notLogged">
-		<p><strong>Nom:</strong> {{ user.fullName || user.name || user.username || user.sub || '-' }}</p>
-		<p><strong>Email:</strong> {{ user.email || '-' }}</p>
-		<p><strong>Rôle:</strong> {{ user.role || user.roles || '-' }}</p>
-		<pre style="background:#f6f6f6; padding:10px">{{ user | json }}</pre>
-	</div>
+      <!-- Avatar et Info de Base -->
+      <div class="profile-content">
+        <div class="avatar-section">
+          <div class="avatar-wrapper">
+            <img 
+              [src]="previewUrl || user.profileImage || 'assets/default-avatar.png'" 
+              alt="Photo de profil" 
+              class="profile-avatar"
+            />
+            <label class="avatar-edit-overlay">
+              <mat-icon>photo_camera</mat-icon>
+              <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+            </label>
+          </div>
 
-	<ng-template #notLogged>
-		<p>Vous n'êtes pas connecté. <a routerLink="/auth/signin">Se connecter</a></p>
-	</ng-template>
+          <!-- Bouton sauvegarder si fichier sélectionné -->
+          <button 
+            *ngIf="selectedFile" 
+            mat-raised-button 
+            color="primary" 
+            class="save-avatar-btn"
+            (click)="uploadImage()">
+            <mat-icon>save</mat-icon>
+            Enregistrer la photo
+          </button>
+        </div>
+
+        <div class="profile-header-info">
+          <h1 class="profile-name">{{ user.fullName }}</h1>
+          <p class="profile-specialty">{{ user.specialty || 'Professionnel de santé' }}</p>
+          <p class="profile-location" *ngIf="user.address">
+            <mat-icon>location_on</mat-icon>
+            {{ user.address }}
+          </p>
+          
+          <div class="profile-stats">
+            <div class="stat">
+              <strong>{{ user.connectionsCount || 0 }}</strong>
+              <span>Connexions</span>
+            </div>
+            <div class="stat">
+              <strong>{{ user.postsCount || 0 }}</strong>
+              <span>Publications</span>
+            </div>
+            <div class="stat">
+              <strong>{{ user.articlesCount || 0 }}</strong>
+              <span>Articles</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Carte À Propos -->
+    <mat-card class="info-card" *ngIf="user">
+      <div class="card-header">
+        <h2>À propos</h2>
+        <button 
+          mat-icon-button 
+          *ngIf="!editMode" 
+          (click)="enableEdit()"
+          class="edit-icon-btn">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+
+      <!-- Mode Lecture -->
+      <div class="info-content" *ngIf="!editMode">
+        <div class="info-item">
+          <mat-icon>badge</mat-icon>
+          <div class="info-text">
+            <label>Nom complet</label>
+            <p>{{ user.fullName }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <mat-icon>email</mat-icon>
+          <div class="info-text">
+            <label>Email</label>
+            <p>{{ user.email }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <mat-icon>phone</mat-icon>
+          <div class="info-text">
+            <label>Téléphone</label>
+            <p>{{ user.phoneNumber || 'Non renseigné' }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <mat-icon>location_on</mat-icon>
+          <div class="info-text">
+            <label>Adresse</label>
+            <p>{{ user.address || 'Non renseignée' }}</p>
+          </div>
+        </div>
+
+        <div class="info-item" *ngIf="user.specialty">
+          <mat-icon>medical_services</mat-icon>
+          <div class="info-text">
+            <label>Spécialité</label>
+            <p>{{ user.specialty }}</p>
+          </div>
+        </div>
+
+        <div class="info-item" *ngIf="user.bio">
+          <mat-icon>description</mat-icon>
+          <div class="info-text">
+            <label>Biographie</label>
+            <p>{{ user.bio }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode Édition -->
+      <div class="edit-form" *ngIf="editMode">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Nom complet</mat-label>
+          <input matInput [(ngModel)]="formData.fullName" />
+          <mat-icon matPrefix>badge</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Téléphone</mat-label>
+          <input matInput [(ngModel)]="formData.phoneNumber" type="tel" />
+          <mat-icon matPrefix>phone</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Adresse</mat-label>
+          <input matInput [(ngModel)]="formData.address" />
+          <mat-icon matPrefix>location_on</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field" *ngIf="user.specialty">
+          <mat-label>Spécialité</mat-label>
+          <input matInput [(ngModel)]="formData.specialty" />
+          <mat-icon matPrefix>medical_services</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Biographie</mat-label>
+          <textarea matInput [(ngModel)]="formData.bio" rows="4"></textarea>
+          <mat-icon matPrefix>description</mat-icon>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" (click)="saveProfile()">
+            <mat-icon>save</mat-icon>
+            Enregistrer
+          </button>
+          <button mat-stroked-button (click)="editMode = false">
+            <mat-icon>close</mat-icon>
+            Annuler
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Carte Activité -->
+    <mat-card class="activity-card">
+      <div class="card-header">
+        <h2>Activité récente</h2>
+        <button mat-button class="view-all-btn">Voir tout</button>
+      </div>
+
+      <div class="activity-list">
+        <div class="activity-item" *ngFor="let i of [1, 2, 3]">
+          <div class="activity-icon">
+            <mat-icon>article</mat-icon>
+          </div>
+          <div class="activity-content">
+            <p class="activity-title">Publication d'un article</p>
+            <p class="activity-time">Il y a 2 jours</p>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Sidebar Droite -->
+  <aside class="sidebar-section">
+    <!-- Carte Compétences -->
+    <mat-card class="skills-card">
+      <div class="card-header">
+        <h3>Compétences</h3>
+        <button mat-icon-button class="edit-icon-btn">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      
+      <div class="skills-list">
+        <div class="skill-chip" *ngFor="let skill of ['Cardiologie', 'Diagnostic', 'Chirurgie', 'Recherche']">
+          {{ skill }}
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Carte Formations -->
+    <mat-card class="education-card">
+      <div class="card-header">
+        <h3>Formation</h3>
+        <button mat-icon-button class="edit-icon-btn">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      
+      <div class="education-list">
+        <div class="education-item">
+          <mat-icon class="edu-icon">school</mat-icon>
+          <div class="edu-content">
+            <h4>Doctorat en Médecine</h4>
+            <p>Université Paris Descartes</p>
+            <span>2015 - 2021</span>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Carte Certifications -->
+    <mat-card class="certifications-card">
+      <div class="card-header">
+        <h3>Certifications</h3>
+        <button mat-icon-button class="edit-icon-btn">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      
+      <div class="cert-list">
+        <div class="cert-item">
+          <mat-icon class="cert-icon">verified</mat-icon>
+          <div class="cert-content">
+            <h4>Spécialiste Cardiologie</h4>
+            <span>Ordre des Médecins • 2022</span>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </aside>
 </div>

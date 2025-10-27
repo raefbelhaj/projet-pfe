@@ -1,5 +1,4 @@
-// src/app/accueil/accueil.component.ts
-import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { Component, inject, PLATFORM_ID, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -8,14 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import {
-  PostService,
-  Post,
-  Comment,
-  ReactionSummary
-} from '../shared/services/post.service';
-
-import { CurrentUserService } from '../shared/services/current-user.service';
+import { PostService, Post, Comment, ReactionSummary } from '../shared/services/post.service';
+import { AuthService } from '../shared/services/auth.service';
+import { MatDivider } from "@angular/material/divider";
 
 @Component({
   selector: 'app-accueil',
@@ -27,50 +21,47 @@ import { CurrentUserService } from '../shared/services/current-user.service';
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
-  ],
+    MatInputModule,
+    MatDivider
+],
   templateUrl: './accueil.component.html',
   styleUrls: ['./accueil.component.css']
 })
-export class AccueilComponent {
-  // Services
+export class AccueilComponent implements OnInit, OnDestroy {
+
   private postSvc = inject(PostService);
   private platformId = inject(PLATFORM_ID);
-  private currentUser = inject(CurrentUserService);
+  private authSvc = inject(AuthService);
+  me: any = null;
 
-  // Etat UI
   posts: Post[] = [];
   content = '';
+  selectedImage: string | null = null; // ✅ Image en base64
+  expandComposer = false
 
-  // Données associées aux posts
   comments: Record<number, Comment[]> = {};
   newComment: Record<number, string> = {};
   reactions: Record<number, ReactionSummary> = {};
-
-  // Evite les doubles abonnements WS pour les réactions
   private reactionsSubscribed = new Set<number>();
 
-  // Utilisateur courant (décodé depuis le JWT)
-  me = this.currentUser.get(); // type: CurrentUser | null
-
   ngOnInit() {
-    // Connecter le WS uniquement au navigateur
+    this.authSvc.getMe().subscribe(res => {
+      this.me = res;
+    });
+
     if (isPlatformBrowser(this.platformId)) {
       this.postSvc.connect();
     }
 
-    // Charger la liste des posts (HTTP)
     this.postSvc.list().subscribe({
       next: (list) => {
         this.posts = list.sort((a, b) =>
           (b.createdAt || '').localeCompare(a.createdAt || '')
         );
-        // Pour chaque post, charger le résumé des réactions et brancher le flux une seule fois
         this.posts.forEach((p) => this.loadReactions(p));
       }
     });
 
-    // Ecouter les nouveaux posts (temps réel)
     this.postSvc.post$.subscribe((p) => {
       if (!this.posts.some((x) => x.id === p.id)) {
         this.posts = [p, ...this.posts];
@@ -85,22 +76,55 @@ export class AccueilComponent {
     }
   }
 
-  // ---------- Actions ----------
+  // ✅ Gestion de la sélection d'image
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    
+    // Vérifier le type
+    if (!file.type.startsWith('image/')) {
+      alert('Veuillez sélectionner une image');
+      return;
+    }
+
+    // Vérifier la taille (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('L\'image est trop volumineuse (max 5MB)');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.selectedImage = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ✅ Supprimer l'image sélectionnée
+  removeImage() {
+    this.selectedImage = null;
+  }
+
+  // ✅ Publier avec image
   publish() {
-    if (!this.me) return; // pas connecté / token invalide
+    if (!this.me) return;
 
     const text = this.content.trim();
-    if (!text) return;
+    if (!text && !this.selectedImage) return;
 
     const p: Post = {
-      authorName: this.me.name ?? this.me.email ?? 'Utilisateur',
-      authorSpecialty: this.me.specialty,
-      content: text
+      authorName: this.me.fullName,
+      authorSpecialty: this.me.specialty || undefined,
+      content: text,
+      imageBase64: this.selectedImage || undefined
     };
 
     this.postSvc.create(p).subscribe({
       next: (saved) => {
         this.content = '';
+        this.selectedImage = null;
         if (!this.posts.some((x) => x.id === saved.id)) {
           this.posts = [saved, ...this.posts];
         }
@@ -112,9 +136,7 @@ export class AccueilComponent {
   toggleComments(p: Post) {
     const id = p.id!;
     if (!this.comments[id]) {
-      // 1) charger l’historique
       this.postSvc.listComments(id).subscribe((list) => (this.comments[id] = list));
-      // 2) brancher le flux temps réel
       this.postSvc.streamComments(id).subscribe((c) => {
         this.comments[id] = [...(this.comments[id] || []), c];
       });
@@ -130,7 +152,7 @@ export class AccueilComponent {
 
     const c: Partial<Comment> = {
       userId: this.me.id,
-      userName: this.me.name ?? this.me.email ?? 'Utilisateur',
+      userName: this.me.fullName,
       content: text
     };
 
@@ -143,12 +165,11 @@ export class AccueilComponent {
     if (!this.me) return;
 
     const id = p.id!;
-    // 1) résumé initial via HTTP
+
     this.postSvc.getReactions(id, this.me.id).subscribe((sum) => {
       this.reactions[id] = sum;
     });
 
-    // 2) abonnement WS (une seule fois par post)
     if (!this.reactionsSubscribed.has(id)) {
       this.reactionsSubscribed.add(id);
       this.postSvc.streamReactions(id).subscribe((s) => (this.reactions[id] = s));
@@ -159,8 +180,6 @@ export class AccueilComponent {
     if (!this.me) return;
 
     const id = p.id!;
-    this.postSvc
-      .toggleReaction(id, type, this.me.id)
-      .subscribe((s) => (this.reactions[id] = s));
+    this.postSvc.toggleReaction(id, type, this.me.id).subscribe((s) => (this.reactions[id] = s));
   }
 }

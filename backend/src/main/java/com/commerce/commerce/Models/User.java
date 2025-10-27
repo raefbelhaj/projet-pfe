@@ -40,6 +40,10 @@ public class User implements UserDetails {
 
     private String resetPasswordToken;
 
+    @Column(name = "profile_image")
+    private String profileImage; // ex: "uploads/user_5.png"
+
+
     // Optional fields for specific roles  ( patient et doctor )
     private String dateOfBirth;
     private String gender;

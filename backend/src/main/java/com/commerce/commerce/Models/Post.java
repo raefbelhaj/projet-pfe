@@ -14,11 +14,17 @@ public class Post {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private String authorName;         // en prod: déduit du JWT
     private String authorSpecialty;
 
     @Column(length = 5000)
     private String content;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String imageBase64;
+
 
     private Instant createdAt = Instant.now();
 

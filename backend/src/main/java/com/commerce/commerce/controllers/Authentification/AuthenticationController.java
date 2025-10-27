@@ -6,6 +6,7 @@ import com.commerce.commerce.Service.Authentification.JwtService;
 import com.commerce.commerce.Service.Authentification.UserService;
 import com.commerce.commerce.dtos.Authentification.LoginUserDto;
 import com.commerce.commerce.dtos.Authentification.UserSignupDTO;
+import com.commerce.commerce.dtos.GestionUser.UpdateProfileDTO;
 import com.commerce.commerce.enumeration.ERole;
 import com.commerce.commerce.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,4 +118,36 @@ public class AuthenticationController {
         List<User> doctors = userService.getUsersByRole("ROLE_DOCTOR");
         return ResponseEntity.ok(doctors);
     }
+
+    // get connected user
+    @GetMapping("/me")
+    public ResponseEntity<User> getCurrentUser() {
+        User user = userService.getAuthenticatedUser();
+        return ResponseEntity.ok(user);
+    }
+
+    // update information de user
+    @PutMapping("/me")
+    public ResponseEntity<User> updateProfile(@RequestBody UpdateProfileDTO profileDTO) {
+        User user = userService.getAuthenticatedUser();
+
+        // ✅ On garde l'ancien mot de passe
+        String oldPassword = user.getPassword();
+
+        // ✅ On met à jour seulement les infos profil
+        user.setFullName(profileDTO.getFullName());
+        user.setPhoneNumber(profileDTO.getPhoneNumber());
+        user.setAddress(profileDTO.getAddress());
+
+        // ✅ On restaure l'ancien mot de passe
+        user.setPassword(oldPassword);
+
+        // ✅ Sauvegarde sans perturber le hash
+        User updatedUser = userService.saveUserWithoutRehash(user);
+
+        return ResponseEntity.ok(updatedUser);
+    }
+
+
+
 }
