@@ -1,0 +1,254 @@
+<div class="assistant-container">
+  <!-- Sidebar Gauche - Exemples -->
+  <aside class="sidebar-left">
+    <mat-card class="examples-card">
+      <div class="card-header">
+        <mat-icon class="header-icon">science</mat-icon>
+        <h3>Exemples de cas</h3>
+      </div>
+      
+      <div class="examples-list">
+        <div class="example-item" *ngFor="let example of examples" (click)="useExample(example)">
+          <mat-icon>description</mat-icon>
+          <div class="example-content">
+            <h4>{{ example.title }}</h4>
+            <p>{{ example.symptoms | slice:0:60 }}...</p>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="info-section">
+        <mat-icon class="info-icon">info</mat-icon>
+        <p class="info-text">
+          Cliquez sur un exemple pour l'utiliser comme point de départ
+        </p>
+      </div>
+    </mat-card>
+  </aside>
+
+  <!-- Zone Principale - Chat -->
+  <main class="main-content">
+    <!-- Header -->
+    <mat-card class="assistant-header">
+      <div class="header-content">
+        <div class="assistant-info">
+          <div class="assistant-avatar">
+            <mat-icon class="avatar-icon">psychology</mat-icon>
+          </div>
+          <div class="assistant-details">
+            <h1>Assistant Médical IA</h1>
+            <p class="subtitle">
+              <span class="status-indicator" [class.online]="apiStatus === 'online'"></span>
+              Propulsé par Qwen 2.5 (72B)
+            </p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button 
+            mat-icon-button 
+            (click)="newConversation()" 
+            matTooltip="Nouvelle conversation"
+            [disabled]="messages.length === 0">
+            <mat-icon>refresh</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            (click)="exportConversation()" 
+            matTooltip="Exporter la conversation"
+            [disabled]="messages.length === 0">
+            <mat-icon>download</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Zone de Chat -->
+    <div class="chat-area">
+      <!-- Message de bienvenue -->
+      <div class="welcome-message" *ngIf="messages.length === 0">
+        <div class="welcome-icon">
+          <mat-icon>medical_services</mat-icon>
+        </div>
+        <h2>Bienvenue sur l'Assistant Médical IA</h2>
+        <p>Décrivez les symptômes du patient pour obtenir une analyse préliminaire</p>
+        
+        <div class="warning-box">
+          <mat-icon>warning</mat-icon>
+          <p>
+            <strong>Important :</strong> Cet assistant ne remplace pas une consultation médicale. 
+            Seul un médecin peut établir un diagnostic définitif.
+          </p>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="messages-container" #chatContainer *ngIf="messages.length > 0">
+        <div 
+          *ngFor="let message of messages" 
+          class="message-wrapper"
+          [ngClass]="getMessageClass(message.role)">
+          
+          <div class="message-avatar">
+            <mat-icon *ngIf="message.role === 'user'">person</mat-icon>
+            <mat-icon *ngIf="message.role === 'assistant'">psychology</mat-icon>
+          </div>
+
+          <div class="message-bubble">
+            <div class="message-header">
+              <strong>{{ message.role === 'user' ? 'Vous' : 'Assistant IA' }}</strong>
+              <span class="message-time">{{ message.timestamp | date:'short' }}</span>
+            </div>
+            
+            <div class="message-content" [innerText]="message.content"></div>
+            
+            <button 
+              mat-icon-button 
+              class="copy-btn" 
+              (click)="copyToClipboard(message.content)"
+              matTooltip="Copier">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicateur de chargement -->
+        <div class="message-wrapper message-assistant" *ngIf="isLoading">
+          <div class="message-avatar">
+            <mat-icon>psychology</mat-icon>
+          </div>
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone de saisie -->
+    <mat-card class="input-card">
+      <div class="input-wrapper">
+        <mat-form-field appearance="outline" class="message-input">
+          <mat-label>
+            {{ messages.length === 0 ? 'Décrivez les symptômes du patient...' : 'Posez une question de suivi...' }}
+          </mat-label>
+          <textarea 
+            matInput 
+            rows="3"
+            [(ngModel)]="symptoms"
+            (keypress)="onKeyPress($event)"
+            [disabled]="isLoading"
+            placeholder="Ex: Fièvre 39°C, mal à la gorge, fatigue depuis 2 jours..."
+          ></textarea>
+        </mat-form-field>
+
+        <div class="input-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="messages.length === 0 ? analyzeSymptoms() : sendMessage()"
+            [disabled]="!symptoms.trim() || isLoading"
+            class="send-btn">
+            <mat-icon *ngIf="!isLoading">send</mat-icon>
+            <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+            <span>{{ messages.length === 0 ? 'Analyser' : 'Envoyer' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="input-footer">
+        <mat-icon class="footer-icon">tips_and_updates</mat-icon>
+        <span class="footer-text">
+          Appuyez sur Entrée pour envoyer, Maj+Entrée pour nouvelle ligne
+        </span>
+      </div>
+    </mat-card>
+  </main>
+
+  <!-- Sidebar Droite - Informations -->
+  <aside class="sidebar-right">
+    <mat-card class="info-card">
+      <div class="card-header">
+        <mat-icon class="header-icon">info</mat-icon>
+        <h3>Comment utiliser</h3>
+      </div>
+
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>Décrivez les symptômes</h4>
+            <p>Soyez précis et détaillé</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>Recevez l'analyse</h4>
+            <p>L'IA analyse en quelques secondes</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>Posez des questions</h4>
+            <p>Affinez avec des questions de suivi</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h4>Consultez un médecin</h4>
+            <p>Pour un diagnostic définitif</p>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="features-card">
+      <div class="card-header">
+        <mat-icon class="header-icon">verified</mat-icon>
+        <h3>Fonctionnalités</h3>
+      </div>
+
+      <div class="features-list">
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Analyse des symptômes</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Conditions possibles</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Examens recommandés</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Conseils généraux</span>
+        </div>
+        <div class="feature-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Signes d'alerte</span>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="disclaimer-card">
+      <mat-icon class="disclaimer-icon">gavel</mat-icon>
+      <h4>Avertissement légal</h4>
+      <p>
+        Cet outil est destiné à des fins informatives uniquement. 
+        Il ne remplace en aucun cas une consultation médicale professionnelle, 
+        un diagnostic ou un traitement.
+      </p>
+    </mat-card>
+  </aside>
+</div>

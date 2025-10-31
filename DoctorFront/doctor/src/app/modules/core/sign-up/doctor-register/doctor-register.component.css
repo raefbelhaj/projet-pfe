@@ -1,86 +1,206 @@
-:root{
-  --hc-bg:#f6fbff;
-  --hc-primary:#0ea5a0;
-  --hc-ink:#0b2534;
-  --hc-muted:#5b7282;
-  --hc-card:#ffffff;
-  --hc-ring:rgba(14,165,160,.25);
+:root {
+  --hc-bg: #f6fbff;
+  --hc-primary: #0ea5a0;
+  --hc-ink: #0b2534;
+  --hc-muted: #5b7282;
+  --hc-card: #ffffff;
+  --hc-ring: rgba(14, 165, 160, 0.25);
 }
 
-/* Plein écran sans boîte */
-.auth-wrapper{
-  min-height: 100svh;           /* occupe tout le viewport */
+/* ---- AUTH WRAPPER ---- */
+.auth-wrapper {
+  min-height: 100svh;
   height: 100svh;
   display: grid;
-  grid-template-columns: 420px 1fr; /* panneau gauche fixe, formulaire large */
+  grid-template-columns: 420px 1fr; /* Left panel fixed, right panel wide */
   background: var(--hc-bg);
 }
-@media (max-width: 1024px){ .auth-wrapper{ grid-template-columns: 1fr; } }
-
-.brand-panel{
-  position:relative;
-  display:flex; align-items:center; justify-content:center;
-  padding:clamp(24px,5vw,48px);
-  background:
-    radial-gradient(1200px 600px at -10% -10%, #c7f5f3 0%, rgba(199,245,243,0) 60%),
-    linear-gradient(135deg,#e7fbff 0%, #d9f7f8 40%, #e8fdf7 100%);
+@media (max-width: 1024px) {
+  .auth-wrapper {
+    grid-template-columns: 1fr;
+  }
 }
-.brand-content{ max-width: 520px; }
-.brand-content img.logo{ width:56px; height:56px; border-radius:12px; object-fit:contain; background:#fff; padding:6px; box-shadow:0 6px 20px rgba(14,165,160,.25); }
-.brand-content h1{ margin:12px 0 8px; font-weight:800; line-height:1.1; }
-.brand-content p{ margin:0 0 20px; color:var(--hc-muted); }
-.brand-content .trust{ list-style:none; margin:0; padding:0; display:grid; gap:10px; }
-.brand-content .trust mat-icon{ color:var(--hc-primary); }
 
-/* panneau de droite plein écran, plus de “petite boîte” */
-.form-panel{
-  display:grid;
-  align-content: start;      /* le contenu commence en haut, pas centré verticalement */
+/* ---- BRAND PANEL ---- */
+.brand-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 5vw, 48px);
+  background:
+    radial-gradient(1200px 600px at -10% -10%, #c7f5f3 0%, rgba(199, 245, 243, 0) 60%),
+    linear-gradient(135deg, #e7fbff 0%, #d9f7f8 40%, #e8fdf7 100%);
+}
+
+.brand-content {
+  max-width: 520px;
+  text-align: center;
+}
+
+/* ---- LOGO DESIGN ---- */
+.brand-content img.logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  object-fit: contain;
+  background: radial-gradient(circle at 50% 50%, #ffffff 30%, #e6fffd 100%);
+  padding: 8px;
+  box-shadow:
+    0 8px 20px -6px rgba(14, 165, 160, 0.25),
+    0 0 0 6px rgba(14, 165, 160, 0.08);
+  transition: all 0.35s ease;
+}
+
+/* Hover animation for logo */
+.brand-content img.logo:hover {
+  transform: scale(1.06) rotate(-2deg);
+  box-shadow:
+    0 10px 24px -6px rgba(14, 165, 160, 0.35),
+    0 0 0 8px rgba(14, 165, 160, 0.12);
+  background: radial-gradient(circle at 50% 50%, #f8ffff 0%, #dcfdfa 100%);
+}
+
+/* ---- TEXT ---- */
+.brand-content h1 {
+  margin: 16px 0 8px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--hc-ink);
+}
+
+.brand-content p {
+  margin: 0 0 20px;
+  color: var(--hc-muted);
+}
+
+.brand-content .trust {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.brand-content .trust mat-icon {
+  color: var(--hc-primary);
+}
+
+/* ---- FORM PANEL ---- */
+.form-panel {
+  display: grid;
+  align-content: start;
   justify-items: center;
   padding: clamp(24px, 5vw, 48px);
 }
 
-/* carte large et sans overflow interne */
-.signup-card{
-  width: min(980px, 94vw);   /* beaucoup plus large */
+/* ---- SIGNUP CARD ---- */
+.signup-card {
+  width: min(980px, 94vw);
   background: var(--hc-card);
   border-radius: 18px;
-  box-shadow: 0 16px 40px -12px rgba(13,61,76,.12), 0 4px 12px rgba(13,61,76,.06);
-  overflow: visible;         /* empêche le scroll interne à la carte */
+  box-shadow:
+    0 16px 40px -12px rgba(13, 61, 76, 0.12),
+    0 4px 12px rgba(13, 61, 76, 0.06);
+  overflow: visible;
 }
-.signup-card .avatar{ background: rgba(14,165,160,.15); border-radius: 12px !important; }
-.signup-card mat-card-title{ font-weight: 800; }
-.signup-card mat-card-content{ padding-bottom: 20px; }
 
-/* grille en 2 colonnes bien espacée */
-.grid{
+.signup-card .avatar {
+  background: rgba(14, 165, 160, 0.15);
+  border-radius: 12px !important;
+}
+
+.signup-card mat-card-title {
+  font-weight: 800;
+}
+
+.signup-card mat-card-content {
+  padding-bottom: 20px;
+}
+
+/* ---- GRID FORM ---- */
+.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px 24px;
 }
-@media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }
-
-.full{ width:100%; }
-
-/* bloc erreur doux */
-.error{
-  display:flex; align-items:center; gap:8px;
-  padding:10px 12px; border-radius:12px; font-size:14px;
-  color:#671d16; background:#fde8e6; border:1px solid #fac7c2;
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* bouton principal plein-ligne */
-.cta{
-  height: 44px; width: 100%;
-  font-weight: 700; border-radius: 12px;
+.full {
+  width: 100%;
+}
+
+/* ---- ERROR BLOCK ---- */
+.error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #671d16;
+  background: #fde8e6;
+  border: 1px solid #fac7c2;
+}
+
+/* ---- BUTTON ---- */
+.cta {
+  height: 44px;
+  width: 100%;
+  font-weight: 700;
+  border-radius: 12px;
   box-shadow: 0 8px 20px -8px var(--hc-ring);
   margin-top: 6px;
 }
 
-.auth-link{ text-align:center; margin-top:14px; color:var(--hc-muted); }
-.auth-link a{ color:#0ea5a0; font-weight:600; text-decoration:none; }
+/* ---- LINK ---- */
+.auth-link {
+  text-align: center;
+  margin-top: 14px;
+  color: var(--hc-muted);
+}
+.auth-link a {
+  color: #0ea5a0;
+  font-weight: 600;
+  text-decoration: none;
+}
 
-/* Petites retouches Material */
-:host ::ng-deep .mat-mdc-form-field-focus-overlay{ background: transparent !important; }
-:host ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled){ background: #f7fbfd; }
-:host ::ng-deep .mdc-text-field--focused .mdc-line-ripple::after{ border-color: #0ea5a0; }
+/* ---- ANGULAR MATERIAL TWEAKS ---- */
+:host ::ng-deep .mat-mdc-form-field-focus-overlay {
+  background: transparent !important;
+}
+
+:host ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background: #f7fbfd;
+}
+
+:host ::ng-deep .mdc-text-field--focused .mdc-line-ripple::after {
+  border-color: #0ea5a0;
+}
+
+/* ---- OPTIONAL DARK MODE (if you add theme switching later) ---- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --hc-bg: #0b2534;
+    --hc-card: #142c3b;
+    --hc-ink: #e6f2f5;
+    --hc-muted: #a2b6c1;
+  }
+
+  .brand-panel {
+    background:
+      radial-gradient(1200px 600px at -10% -10%, #1a3b44 0%, rgba(0, 0, 0, 0) 60%),
+      linear-gradient(135deg, #122d38 0%, #193a43 40%, #1e434d 100%);
+  }
+
+  .brand-content img.logo {
+    background: radial-gradient(circle at 50% 50%, #1c2f35 30%, #0ea5a015 100%);
+    box-shadow:
+      0 8px 20px -6px rgba(14, 165, 160, 0.3),
+      0 0 0 6px rgba(14, 165, 160, 0.08);
+  }
+}

@@ -13,6 +13,7 @@ import { ProfilComponent } from './pages/profil.component';
 import { DocteursComponent } from './pages/docteurs.component';
 import { MessagesComponent } from './pages/messages.component';
 import { authGuard } from './shared/auth.guard';
+import { MedicalAssistantComponent } from './medical-assistant/medical-assistant/medical-assistant.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/signup', pathMatch: 'full' },
@@ -35,6 +36,8 @@ export const routes: Routes = [
       { path: 'profil',   component: ProfilComponent },
       { path: 'docteurs', component: DocteursComponent },
       { path: 'messages', component: MessagesComponent },
+        { path: 'assistant-medical', component: MedicalAssistantComponent },
+
     ]
   },
 

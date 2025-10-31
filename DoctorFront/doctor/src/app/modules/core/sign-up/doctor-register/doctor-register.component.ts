@@ -104,4 +104,6 @@ export class DoctorRegisterComponent {
       }
     });
   }
+  logoPath = 'assets/medlink-logo.png';
+
 }
