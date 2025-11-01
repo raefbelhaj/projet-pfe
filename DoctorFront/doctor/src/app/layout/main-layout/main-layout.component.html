@@ -1,62 +1,49 @@
 <mat-sidenav-container class="container">
-  <!-- === SIDENAV === -->
-  <mat-sidenav
-    #drawer
-    [mode]="isMobile() ? 'over' : 'side'"
-    [opened]="!isMobile()"
-    class="sidenav"
-  >
+  <mat-sidenav #drawer [mode]="isMobile() ? 'over' : 'side'" [opened]="!isMobile()" class="sidenav">
     <div class="sidenav-header">
-      <!-- MedLink Logo -->
       <img class="logo" src="assets/medlink-logo.png" alt="MedLink" />
       <span class="logo-text">MedLink</span>
     </div>
 
     <mat-nav-list>
-      <a mat-list-item routerLink="accueil" routerLinkActive="active">
-        <mat-icon>home</mat-icon>Accueil
-      </a>
-      <a mat-list-item routerLink="profil" routerLinkActive="active">
-        <mat-icon>person</mat-icon>Profil
-      </a>
-      <a mat-list-item routerLink="docteurs" routerLinkActive="active">
-        <mat-icon>medical_services</mat-icon>Docteurs
-      </a>
-      <a mat-list-item routerLink="messages" routerLinkActive="active">
-        <mat-icon>chat</mat-icon>Messages
-      </a>
-
-      <!-- Assistant IA Médical -->
-      <a mat-list-item routerLink="assistant-medical" routerLinkActive="active">
-        <mat-icon>psychology</mat-icon>Assistant IA Médical
-      </a>
+      <a mat-list-item routerLink="accueil" routerLinkActive="active"><mat-icon>home</mat-icon>Accueil</a>
+      <a mat-list-item routerLink="profil" routerLinkActive="active"><mat-icon>person</mat-icon>Profil</a>
+      <a mat-list-item routerLink="docteurs" routerLinkActive="active"><mat-icon>medical_services</mat-icon>Docteurs</a>
+      <a mat-list-item routerLink="messages" routerLinkActive="active"><mat-icon>chat</mat-icon>Messages</a>
+      <a mat-list-item routerLink="assistant-medical" routerLinkActive="active"><mat-icon>psychology</mat-icon>Assistant IA Médical</a>
     </mat-nav-list>
   </mat-sidenav>
 
-  <!-- === MAIN CONTENT === -->
   <mat-sidenav-content>
     <mat-toolbar class="toolbar" color="primary">
-      <button
-        mat-icon-button
-        (click)="drawer.toggle()"
-        class="menu-btn"
-        *ngIf="isMobile()"
-      >
-        <mat-icon>menu</mat-icon>
-      </button>
+      <button mat-icon-button (click)="drawer.toggle()" class="menu-btn" *ngIf="isMobile()"><mat-icon>menu</mat-icon></button>
 
-      <!-- Brand + Logo -->
-      <div class="brand">
-        <img class="logo" src="assets/medlink-logo.png" alt="MedLink" />
-        <span class="brand-text">MedLink</span>
-      </div>
-
+      <div class="brand"><img class="logo" src="assets/medlink-logo.png" alt="MedLink" /><span class="brand-text">MedLink</span></div>
       <span class="spacer"></span>
 
-      <button mat-icon-button matTooltip="Notifications">
-        <mat-icon matBadge="2" matBadgeColor="warn">notifications</mat-icon>
+      <!-- 🔔 Notifications -->
+      <button mat-icon-button [matMenuTriggerFor]="notifMenu" (click)="clearNotifications()" matTooltip="Notifications">
+        <mat-icon matBadge="{{ newNotifCount() }}" matBadgeColor="warn"
+                  [matBadgeHidden]="newNotifCount() === 0" [class.pulse]="newNotifCount() > 0">
+          notifications
+        </mat-icon>
       </button>
 
+      <mat-menu #notifMenu="matMenu">
+        <ng-container *ngIf="notifications.length > 0; else noNotif">
+          <button mat-menu-item *ngFor="let n of notifications">
+            <mat-icon color="primary">comment</mat-icon>
+            <span><b>{{ n.fromUserName }}</b> {{ n.content }}</span>
+          </button>
+        </ng-container>
+        <ng-template #noNotif>
+          <button mat-menu-item disabled>
+            <mat-icon>done_all</mat-icon> Aucune notification
+          </button>
+        </ng-template>
+      </mat-menu>
+
+      <!-- Utilisateur -->
       <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
         <img class="avatar" src="https://i.pravatar.cc/40?img=11" alt="user" />
         <span class="user-name">Dr. Karim</span>
@@ -64,17 +51,11 @@
       </button>
 
       <mat-menu #userMenu="matMenu">
-        <button mat-menu-item routerLink="profil">
-          <mat-icon>person</mat-icon> Profil
-        </button>
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon> Déconnexion
-        </button>
+        <button mat-menu-item routerLink="profil"><mat-icon>person</mat-icon> Profil</button>
+        <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Déconnexion</button>
       </mat-menu>
     </mat-toolbar>
 
-    <div class="content">
-      <router-outlet></router-outlet>
-    </div>
+    <div class="content"><router-outlet></router-outlet></div>
   </mat-sidenav-content>
 </mat-sidenav-container>

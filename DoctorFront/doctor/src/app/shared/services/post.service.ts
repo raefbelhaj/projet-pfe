@@ -10,6 +10,8 @@ import { RxStomp, IMessage } from '@stomp/rx-stomp';
 /* ✅ Interface Post avec support image */
 export interface Post {
   id?: number;
+    userId?: string;              // ✅ Ajouté
+
   authorName: string;
   authorSpecialty?: string;
   content: string;

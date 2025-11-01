@@ -6,17 +6,17 @@ import lombok.Data;
 
 import java.time.Instant;
 
-
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Data
 public class Post {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    private String authorName;         // en prod: déduit du JWT
-    private String authorSpecialty;
+    private String userId;            // identifiant du créateur
+    private String authorName;        // nom complet de l’auteur
+    private String authorSpecialty;   // spécialité
 
     @Column(length = 5000)
     private String content;
@@ -25,8 +25,5 @@ public class Post {
     @Column(columnDefinition = "LONGTEXT")
     private String imageBase64;
 
-
     private Instant createdAt = Instant.now();
-
-    // getters/setters
 }

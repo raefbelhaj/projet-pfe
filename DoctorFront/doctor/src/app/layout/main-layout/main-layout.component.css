@@ -29,7 +29,6 @@
   border-bottom: 1px solid #e0f2f1;
 }
 
-/* Logo image styling (same as login/signup design) */
 .sidenav-header .logo,
 .brand .logo {
   width: 40px;
@@ -103,6 +102,34 @@
 
 .spacer {
   flex: 1 1 auto;
+}
+
+/* ---- Notifications ---- */
+.pulse {
+  animation: pulse-bell 1.4s ease-out infinite;
+}
+
+@keyframes pulse-bell {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ---- Notification Dropdown ---- */
+.mat-menu-item {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mat-menu-item mat-icon {
+  color: var(--hc-primary);
 }
 
 /* ---- User Menu ---- */

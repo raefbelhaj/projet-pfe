@@ -6,10 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDivider } from "@angular/material/divider";
 
 import { PostService, Post, Comment, ReactionSummary } from '../shared/services/post.service';
 import { AuthService } from '../shared/services/auth.service';
-import { MatDivider } from "@angular/material/divider";
 
 @Component({
   selector: 'app-accueil',
@@ -23,7 +23,7 @@ import { MatDivider } from "@angular/material/divider";
     MatFormFieldModule,
     MatInputModule,
     MatDivider
-],
+  ],
   templateUrl: './accueil.component.html',
   styleUrls: ['./accueil.component.css']
 })
@@ -32,12 +32,13 @@ export class AccueilComponent implements OnInit, OnDestroy {
   private postSvc = inject(PostService);
   private platformId = inject(PLATFORM_ID);
   private authSvc = inject(AuthService);
+
   me: any = null;
 
   posts: Post[] = [];
   content = '';
-  selectedImage: string | null = null; // ✅ Image en base64
-  expandComposer = false
+  selectedImage: string | null = null;
+  expandComposer = false;
 
   comments: Record<number, Comment[]> = {};
   newComment: Record<number, string> = {};
@@ -45,28 +46,45 @@ export class AccueilComponent implements OnInit, OnDestroy {
   private reactionsSubscribed = new Set<number>();
 
   ngOnInit() {
+    // 🧠 Récupère les infos du user connecté
     this.authSvc.getMe().subscribe(res => {
       this.me = res;
+
+      // Stocke pour les notifs temps réel
+      if (this.me?.fullName) {
+        localStorage.setItem('userName', this.me.fullName);
+      }
+      if (this.me?.id) {
+        localStorage.setItem('userId', this.me.id);
+      }
     });
 
+    // Active les WebSockets (client STOMP)
     if (isPlatformBrowser(this.platformId)) {
       this.postSvc.connect();
     }
 
+    // Charge les posts existants
     this.postSvc.list().subscribe({
       next: (list) => {
         this.posts = list.sort((a, b) =>
           (b.createdAt || '').localeCompare(a.createdAt || '')
         );
-        this.posts.forEach((p) => this.loadReactions(p));
+
+        this.posts.forEach((p) => {
+          this.loadReactions(p);
+          this.initComments(p);
+        });
       }
     });
 
+    // Écoute les nouveaux posts temps réel
     this.postSvc.post$.subscribe((p) => {
       if (!this.posts.some((x) => x.id === p.id)) {
         this.posts = [p, ...this.posts];
       }
       this.loadReactions(p);
+      this.initComments(p);
     });
   }
 
@@ -76,22 +94,20 @@ export class AccueilComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ✅ Gestion de la sélection d'image
+  /** ==============================
+   *  📸 Gestion d’image de post
+   * =============================== */
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
-    
-    // Vérifier le type
     if (!file.type.startsWith('image/')) {
-      alert('Veuillez sélectionner une image');
+      alert('Veuillez sélectionner une image.');
       return;
     }
-
-    // Vérifier la taille (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('L\'image est trop volumineuse (max 5MB)');
+      alert('L’image est trop volumineuse (max 5MB)');
       return;
     }
 
@@ -102,12 +118,13 @@ export class AccueilComponent implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
   }
 
-  // ✅ Supprimer l'image sélectionnée
   removeImage() {
     this.selectedImage = null;
   }
 
-  // ✅ Publier avec image
+  /** ==============================
+   *  📝 Publication d’un nouveau post
+   * =============================== */
   publish() {
     if (!this.me) return;
 
@@ -115,6 +132,7 @@ export class AccueilComponent implements OnInit, OnDestroy {
     if (!text && !this.selectedImage) return;
 
     const p: Post = {
+      userId: this.me.id, // ✅ ajouté
       authorName: this.me.fullName,
       authorSpecialty: this.me.specialty || undefined,
       content: text,
@@ -125,22 +143,41 @@ export class AccueilComponent implements OnInit, OnDestroy {
       next: (saved) => {
         this.content = '';
         this.selectedImage = null;
+
         if (!this.posts.some((x) => x.id === saved.id)) {
           this.posts = [saved, ...this.posts];
         }
+
         this.loadReactions(saved);
-      }
+        this.initComments(saved);
+      },
+      error: (err) => console.error('Erreur post:', err)
     });
   }
 
+  /** ==============================
+   *  💬 Gestion des commentaires
+   * =============================== */
   toggleComments(p: Post) {
     const id = p.id!;
     if (!this.comments[id]) {
-      this.postSvc.listComments(id).subscribe((list) => (this.comments[id] = list));
-      this.postSvc.streamComments(id).subscribe((c) => {
-        this.comments[id] = [...(this.comments[id] || []), c];
-      });
+      this.initComments(p);
     }
+  }
+
+  private initComments(p: Post) {
+    const id = p.id!;
+    this.comments[id] = [];
+
+    // Charge les anciens commentaires
+    this.postSvc.listComments(id).subscribe((list) => {
+      this.comments[id] = list;
+    });
+
+    // Écoute en temps réel
+    this.postSvc.streamComments(id).subscribe((c) => {
+      this.comments[id] = [...(this.comments[id] || []), c];
+    });
   }
 
   addComment(p: Post) {
@@ -157,16 +194,19 @@ export class AccueilComponent implements OnInit, OnDestroy {
     };
 
     this.postSvc.addComment(id, c).subscribe({
-      next: () => (this.newComment[id] = '')
+      next: () => (this.newComment[id] = ''),
+      error: (err) => console.error('Erreur ajout commentaire:', err)
     });
   }
 
+  /** ==============================
+   *  👍 Réactions (Like / Clap / Insightful)
+   * =============================== */
   loadReactions(p: Post) {
     if (!this.me) return;
-
     const id = p.id!;
 
-    this.postSvc.getReactions(id, this.me.id).subscribe((sum) => {
+    this.postSvc.getReactions(id, this.me.fullName).subscribe((sum) => {
       this.reactions[id] = sum;
     });
 
@@ -180,6 +220,9 @@ export class AccueilComponent implements OnInit, OnDestroy {
     if (!this.me) return;
 
     const id = p.id!;
-    this.postSvc.toggleReaction(id, type, this.me.id).subscribe((s) => (this.reactions[id] = s));
+    this.postSvc.toggleReaction(id, type, this.me.fullName).subscribe({
+      next: (s) => (this.reactions[id] = s),
+      error: (err) => console.error('Erreur réaction:', err)
+    });
   }
 }
